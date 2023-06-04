@@ -2,9 +2,7 @@
 
 *Emergence of the muses.*
 
-Web demo: https://emusence.onrender.com
-
-GitHub: https://github.com/ziruihao/emusence
+[[Web demo](https://emusence.onrender.com)] and [[GitHub](https://github.com/ziruihao/emusence)]
 
 <img width="1373" alt="cover" src="https://github.com/ziruihao/emusence/assets/45774151/31e3dc91-4e2a-43b9-918c-75e83e76183c">
 

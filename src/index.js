@@ -15,6 +15,7 @@ export const options = {
 let musicPlayer;
 let paused = false;
 let started = false;
+let startFrameCount = 0;
 export const UI = {
   cadence: null,
   population: null,
@@ -174,26 +175,26 @@ const sketch = (p) => {
         }
       });
 
-      if (p.frameCount < 720) {
-        UI.volume.value(50 * (p.frameCount / 720))
-        p.fill(255, 255 * (1 - p.frameCount / 720))
+      if ((p.frameCount - startFrameCount) < 720) {
+        UI.volume.value(50 * ((p.frameCount - startFrameCount) / 720))
+        p.fill(255, 255 * (1 - (p.frameCount - startFrameCount) / 720))
         p.text("Nature's sounds are beautiful, but they are quiet.", p.windowWidth / 2, p.windowHeight / 3 + 40)
-        if (p.frameCount > 180) {
-          p.fill(255, 255 * (1 - ((p.frameCount - 180) / 540)))
+        if ((p.frameCount - startFrameCount) > 180) {
+          p.fill(255, 255 * (1 - (((p.frameCount - startFrameCount) - 180) / 540)))
           p.textSize(18);
           p.text("Drowned out by the noise of our modern world.", p.windowWidth / 2, p.windowHeight / 3 + 80)
-          if (p.frameCount > 360) {
-            p.fill(255, 255 * (1 - ((360 - p.frameCount) / 360)))
+          if ((p.frameCount - startFrameCount) > 360) {
+            p.fill(255, 255 * (1 - ((360 - (p.frameCount - startFrameCount)) / 360)))
             p.textSize(18);
             p.text("What if we gave nature our instruments?", p.windowWidth / 2, p.windowHeight / 3 + 120)
-            if (p.frameCount > 540) {
-              p.fill(255, 255 * (1 - ((540 - p.frameCount) / 180)))
+            if ((p.frameCount - startFrameCount) > 540) {
+              p.fill(255, 255 * (1 - ((540 - (p.frameCount - startFrameCount)) / 180)))
               p.text("And invite it to conduct a symphony?", p.windowWidth / 2, p.windowHeight / 3 + 160)
             }
           }
         }
       } else {
-        if (p.frameCount == 720) {
+        if ((p.frameCount - startFrameCount) == 720) {
           Object.values(UI).forEach((el) => {el.show()})
         }
         p.fill(255, 255);
@@ -256,6 +257,7 @@ const sketch = (p) => {
   p.mouseClicked = () => {
     if (!started) {
       started = true;
+      startFrameCount = p.frameCount;
       Tone.start().then(() => {
         console.log('Tone.js started')
         console.log('%cindex.js line:213 Tone.context.sampleRate', 'color: #007acc;', Tone.context.sampleRate);
