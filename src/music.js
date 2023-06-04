@@ -90,7 +90,7 @@ export class MusicPlayer {
       if (this.audioContext !== undefined) {
         this.mode = "BROWSER";
         return this.mode
-      } else if (confirm("This project sounds far better as MIDI piped into the Ableton Live set I provided in the submission. Click CANCEL to try MIDI, or OK to continue with the browser instrument.")) {
+      } else {
         const convolver = new Tone.Convolver(impulse).toDestination();
         this.browserInstrument.piano = new PianoMp3({
           onload: () => {
