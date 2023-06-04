@@ -33,13 +33,13 @@ I built a flocking simulation based on Craig Reynold's concept of boids. Each bo
 
 Mesmerizing flocking patterns emerge from these simple rules. The boids self-organize in cohesive clusters. Three weights control how strong each rule applies, and I experimented with many combinations until I settled on a `8:1:8` ratio.[^You can adjust this ratio to go between tight and loose flocks, regimented versus free-flowing movement.] There were also many other configurations, such as the scanning radius applied each of the rules, that I iterated for a long time before achieving what you see. I built this simulation engine in JavaScript and rendered all the graphics using the [P5.js](http://p5js.org) library. My end goal was an easily shareable URL to render and play this piece anywhere.
 
-rules.png
+<img width="553" alt="rules" src="https://github.com/ziruihao/emusence/assets/45774151/3fc06ec4-ad0a-408b-8589-3438da592f95">
 
 As you can see in the main demo video, the boids begin dispersed but slowly coalesce together, then occasionally separate and regroup. Hence, I added some interactivity so the viewer can influence the flight patterns and thus the musical character.
 1. Obstacles — the boids must flow around these lily pads, thus they invite more tributary movement in smaller clusters
 2. Predators — these boids chase other boids, causing rapid direction changes and scattering
 
-interactivity.png
+<img width="751" alt="interactivity" src="https://github.com/ziruihao/emusence/assets/45774151/cb17bb47-e67c-491b-8246-a4e8c847fbf7">
 
 ### 2.2 Orchestra
 
@@ -49,7 +49,7 @@ The artistic intention behind all these instruments was to give a nod to nature.
 
 These synths are piped through a reverb effect before outputting to master. The spatial ambience of reverb alludes to the vastness of the sky or the ocean, environments that inspired this piece.
 
-Ableton Live set.png
+<img width="1325" alt="Ableton Live set" src="https://github.com/ziruihao/emusence/assets/45774151/e2272c97-d277-4078-9af4-2796d09ed3b5">
 
 ### 2.3 Musical mechanics
 
@@ -57,7 +57,7 @@ In essence, every boid has the opportunity to be a voice in the orchestra. On ev
 
 Chosen boids will play depending on several aspects of their movement. We primarily focus on the flock clustering. I used a density-based clustering called DBSCAN, using the open source JavaScript implementation by [upphiminn](https://github.com/upphiminn/jDBSCAN). I chose DBSCAN because it automatically deduces the number of clusters, whereas other algorithms like K-Means requires that as a starting parameter. Since the flock is so amorphous, it doesn't make sense to have a preset number of clusters. The screenshot below shows are how the boids are grouped together with their neighbors.
 
-clustering.png
+![clustering](https://github.com/ziruihao/emusence/assets/45774151/1dfa7002-d369-4c5e-b161-6d3dd5ce2e24)
 
 In general, larger clusters of boids provide the tectonic bass movement for the orchestra, while smaller clusters provide the melodies. Straggler boids that wander away from clusters represent the accompaniment percussions. This table below details the precise mechanics between physical movement and music.
 
