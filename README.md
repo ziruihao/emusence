@@ -2,7 +2,7 @@
 
 *Emergence of the muses.*
 
-<img width="1728" alt="cover" src="https://github.com/ziruihao/emusence/assets/45774151/2f50b7a6-0a77-448e-a890-73322a43e28b">
+<img width="1373" alt="cover" src="https://github.com/ziruihao/emusence/assets/45774151/31e3dc91-4e2a-43b9-918c-75e83e76183c">
 
 Web demo: https://emusence.onrender.com
 
