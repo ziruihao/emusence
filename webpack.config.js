@@ -24,10 +24,6 @@ module.exports = {
       patterns: [
         { from: 'public/index.html', to: 'index.html' }, // Copy the index.html file
         { from: 'public/style.css', to: 'style.css' }, // Copy the entire css folder
-        { from: 'src/koi/segment.js', to: 'segment.js' },
-        { from: 'src/koi/fish.js', to: 'fish.js' },
-        { from: 'src/koi/feed.js', to: 'feed.js' },
-        { from: 'src/koi/guide.js', to: 'guide.js' },
       ],
     }),
   ],

@@ -14,7 +14,7 @@ export default class Flocker extends Boid {
         adjustment.add(other.velocity);
         if (this.debug) {
           this.p.stroke(0, 255, 0);
-          this.p.strokeWeight(0);
+          this.p.strokeWeight(5);
           this.p.line(
             this.position.x,
             this.position.y,
@@ -45,7 +45,7 @@ export default class Flocker extends Boid {
       adjustment.div(count);
       if (this.debug) {
         this.p.stroke(0, 0, 255);
-        this.p.strokeWeight(1);
+        this.p.strokeWeight(5);
         this.p.line(
           this.position.x,
           this.position.y,
@@ -70,7 +70,7 @@ export default class Flocker extends Boid {
         adjustment.add(diff);
         if (this.debug) {
           this.p.stroke(255, 0, 0);
-          this.p.strokeWeight(0);
+          this.p.strokeWeight(5);
           this.p.line(
             this.position.x,
             this.position.y,
@@ -108,7 +108,7 @@ export default class Flocker extends Boid {
         adjustment.add(diff);
         if (this.debug) {
           this.p.stroke(255, 0, 0);
-          this.p.strokeWeight(1);
+          this.p.strokeWeight(5);
           this.p.line(
             this.position.x,
             this.position.y,
@@ -145,7 +145,7 @@ export default class Flocker extends Boid {
         adjustment.add(diff);
         if (this.debug) {
           this.p.stroke(255, 0, 0);
-          this.p.strokeWeight(1);
+          this.p.strokeWeight(0);
           this.p.line(this.position.x, this.position.y, other.x, other.y);
         }
       }
