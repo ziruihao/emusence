@@ -17,6 +17,17 @@ module.exports = {
           loader: 'babel-loader',
         },
       },
+      {
+        test: /\.(wav|ogg|mp3)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'sounds/', // Output folder for the bundled .wav files
+            },
+          },
+        ],
+      },
     ],
   },
   plugins: [

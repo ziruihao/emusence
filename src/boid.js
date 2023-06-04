@@ -1,4 +1,4 @@
-import { clusterColorMap, clusters, options, sliders } from ".";
+import { clusterColorMap, clusters, options, UI } from ".";
 import p5 from "p5";
 
 export const SHAPE = [
@@ -153,7 +153,7 @@ export default class Boid {
 
   async playMusic() {
     let neighbors = this.getNeighbors();
-    const PLAY_INTERVAL_FRAMES = Math.floor(60 / sliders.cadence.value());
+    const PLAY_INTERVAL_FRAMES = Math.floor(60 / UI.cadence.value());
     let chance = 1 * PLAY_INTERVAL_FRAMES;
     const alarm =
       (this.headingDelta > 80 && this.fleeing > 0) || this.fleeing == 2;

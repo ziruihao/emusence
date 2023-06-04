@@ -1,3 +1,8 @@
+import * as Tone from 'tone'
+import Flutes from 'tonejs-instrument-flute';
+import PianoMp3 from 'tonejs-instrument-piano-mp3';
+import { UI } from '.';
+
 const CIRCLE_OF_FIFTHS = {
   0: "C",
   1: "G",
@@ -43,70 +48,74 @@ const CHORDS = [
 
 export class MusicPlayer {
   constructor() {
+    this.outputMIDI = undefined;
+    this.audioContext = undefined;
+    this.browserInstrument = undefined;
+    this.mode = "NONE";
     this.reset();
   }
 
   reset() {
-    this.outputMIDI = undefined;
-    this.mode = undefined;
-    this.audioContext = undefined;
     this.currentKey = "C";
     this.prevAvgHeading = 0;
   }
 
-  async init() {
-    if (navigator.requestMIDIAccess) {
-      const midiAccess = await navigator.requestMIDIAccess();
-      const outputs = Array.from(midiAccess.outputs.values());
-      const output = outputs[0];
-
-      if (output) {
-        this.outputMIDI = output;
-        this.mode = "MIDI";
-        console.log("MIDI output device found.");
+  async switchMode(mode) {
+    if (mode === "MIDI") {
+      if (this.outputMIDI !== undefined) {
+        this.mode = mode;
+      } else if (navigator.requestMIDIAccess) {
+        const midiAccess = await navigator.requestMIDIAccess();
+        const outputs = Array.from(midiAccess.outputs.values());
+        const output = outputs[0];
+  
+        if (output) {
+          this.outputMIDI = output;
+          this.mode = "MIDI";
+          return this.mode;
+        } else {
+          alert(
+            "No MIDI output devices found."
+          );
+        }
       } else {
-        console.log(
-          "No MIDI output devices found. Playing in the browser instead."
-        );
+        alert("Web MIDI API is not supported by your browser. Please try the latest version of Chrome.");
       }
-    } else {
-      console.error("Web MIDI API is not supported by your browser.");
+    } else if (mode == "BROWSER") {
+      if (this.audioContext !== undefined) {
+        this.mode = "BROWSER";
+        return this.mode
+      } else if (confirm("This project sounds far better as MIDI piped into the Ableton Live set I provided in the submission. Click CANCEL to try MIDI, or OK to continue with the browser instrument.")) {
+        // this.browserInstrument =  new Tone.Synth().toDestination();
+        this.browserInstrument = new PianoMp3({
+          onload: () => {
+            this.audioContext = new (window.AudioContext ||
+              window.webkitAudioContext)();
+            this.mode = "BROWSER";
+            UI.audioMode.selected(this.mode)
+          },
+          onerror: () => {
+            alert("Error loading Tone.js instrument. Please try the latest version of Chrome, or use a MIDI device.");
+          }
+        }).toDestination();
+        return this.mode
+      }
     }
-    if (!this.outputMIDI) {
-      this.mode = "BROWSER";
-      this.audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
-      console.log(this.audioContext.sampleRate);
-    }
-  }
-
-  hasInitialized() {
-    return this.mode !== undefined;
+    this.mode = "NONE"
+    return this.mode
   }
 
   // Assisted by ChatGPT
   async playNoteInBrowser(midiNote, duration) {
-    const frequency = midiToFrequency(midiNote);
-    const oscillator = this.audioContext.createOscillator();
-    const gainNode = this.audioContext.createGain();
-
-    oscillator.type = "sine";
-    oscillator.frequency.value = frequency;
-    gainNode.gain.value = 0.1;
-
-    oscillator.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
-
-    oscillator.start();
-    await sleep(duration);
-    oscillator.stop();
+    const now = Tone.now()
+    this.browserInstrument.triggerAttack(midiToNoteString(midiNote), now);
+    this.browserInstrument.triggerRelease(now + duration / 1000);
   }
 
   async play(note, duration, velocity = 100, channel = 0) {
     if (this.mode === "BROWSER") {
       await this.playNoteInBrowser(note, duration);
-      return;
-    } else {
+    } else if (this.mode === "MIDI") {
       this.outputMIDI.send([0x90 | channel, note, velocity]);
       setTimeout(
         () => this.outputMIDI.send([0x80 | channel, note, 0x00]),
@@ -181,6 +190,15 @@ export class MusicPlayer {
 // Assisted by ChatGPT
 function midiToFrequency(midiNote) {
   return 440 * Math.pow(2, (midiNote - 69) / 12);
+}
+
+// Assisted by ChatGPT
+function midiToNoteString(midiNote) {
+  const noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  const octave = Math.floor(midiNote / 12) - 1;
+  const noteIndex = midiNote % 12;
+  const noteName = noteNames[noteIndex];
+  return noteName + octave;
 }
 
 function sleep(ms) {
