@@ -1,6 +1,12 @@
 import * as Tone from 'tone'
-import Flutes from 'tonejs-instrument-flute';
+import Tuna from 'tunajs'
 import PianoMp3 from 'tonejs-instrument-piano-mp3';
+import XylophoneMp3 from 'tonejs-instrument-xylophone-mp3';
+import FluteMp3 from 'tonejs-instrument-flute-mp3';
+import FrenchHornMp3 from 'tonejs-instrument-french-horn-mp3';
+import TubaMp3 from 'tonejs-instrument-tuba-mp3';
+import impulse from './ir.wav';
+
 import { UI } from '.';
 
 const CIRCLE_OF_FIFTHS = {
@@ -50,7 +56,7 @@ export class MusicPlayer {
   constructor() {
     this.outputMIDI = undefined;
     this.audioContext = undefined;
-    this.browserInstrument = undefined;
+    this.browserInstrument = {};
     this.mode = "NONE";
     this.reset();
   }
@@ -86,8 +92,8 @@ export class MusicPlayer {
         this.mode = "BROWSER";
         return this.mode
       } else if (confirm("This project sounds far better as MIDI piped into the Ableton Live set I provided in the submission. Click CANCEL to try MIDI, or OK to continue with the browser instrument.")) {
-        // this.browserInstrument =  new Tone.Synth().toDestination();
-        this.browserInstrument = new PianoMp3({
+        const convolver = new Tone.Convolver(impulse).toDestination();
+        this.browserInstrument.piano = new PianoMp3({
           onload: () => {
             this.audioContext = new (window.AudioContext ||
               window.webkitAudioContext)();
@@ -95,9 +101,64 @@ export class MusicPlayer {
             UI.audioMode.selected(this.mode)
           },
           onerror: () => {
+            UI.audioMode.selected("NONE")
             alert("Error loading Tone.js instrument. Please try the latest version of Chrome, or use a MIDI device.");
           }
         }).toDestination();
+        this.browserInstrument.tuba = new TubaMp3({
+          onload: () => {
+            this.audioContext = new (window.AudioContext ||
+              window.webkitAudioContext)();
+            this.mode = "BROWSER";
+            UI.audioMode.selected(this.mode)
+          },
+          onerror: () => {
+            UI.audioMode.selected("NONE")
+            alert("Error loading Tone.js instrument. Please try the latest version of Chrome, or use a MIDI device.");
+          }
+        }).toDestination();
+        this.browserInstrument.frenchHorn = new FrenchHornMp3({
+          onload: () => {
+            this.audioContext = new (window.AudioContext ||
+              window.webkitAudioContext)();
+            this.mode = "BROWSER";
+            UI.audioMode.selected(this.mode)
+          },
+          onerror: () => {
+            UI.audioMode.selected("NONE")
+            alert("Error loading Tone.js instrument. Please try the latest version of Chrome, or use a MIDI device.");
+          }
+        }).toDestination();
+        this.browserInstrument.flute = new FluteMp3({
+          onload: () => {
+            this.audioContext = new (window.AudioContext ||
+              window.webkitAudioContext)();
+            this.mode = "BROWSER";
+            UI.audioMode.selected(this.mode)
+          },
+          onerror: () => {
+            UI.audioMode.selected("NONE")
+            alert("Error loading Tone.js instrument. Please try the latest version of Chrome, or use a MIDI device.");
+          }
+        }).toDestination();
+        this.browserInstrument.xylophone = new XylophoneMp3({
+          onload: () => {
+            this.audioContext = new (window.AudioContext ||
+              window.webkitAudioContext)();
+            this.mode = "BROWSER";
+            UI.audioMode.selected(this.mode)
+          },
+          onerror: () => {
+            UI.audioMode.selected("NONE")
+            alert("Error loading Tone.js instrument. Please try the latest version of Chrome, or use a MIDI device.");
+          }
+        }).toDestination();
+        
+        Object.entries(this.browserInstrument).forEach(([k, instrument]) => {
+          console.log('Instrument', k, 'connected to reverb')
+          instrument.release = 1;
+          instrument.connect(convolver);
+        })
         return this.mode
       }
     }
@@ -106,15 +167,30 @@ export class MusicPlayer {
   }
 
   // Assisted by ChatGPT
-  async playNoteInBrowser(midiNote, duration) {
+  async playNoteInBrowser(midiNote, duration, velocity, channel) {
     const now = Tone.now()
-    this.browserInstrument.triggerAttack(midiToNoteString(midiNote), now);
-    this.browserInstrument.triggerRelease(now + duration / 1000);
+    switch (channel) {
+      case 0:
+        this.browserInstrument.tuba.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity / 100);
+        break
+      case 1:
+        this.browserInstrument.frenchHorn.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity / 100);
+        break
+      case 2:
+        this.browserInstrument.flute.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity / 100);
+        break
+      case 3:
+        this.browserInstrument.xylophone.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity / 100);
+        break
+      default:
+        // this.browserInstrument.tuba.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity);
+        break
+    }
   }
 
   async play(note, duration, velocity = 100, channel = 0) {
     if (this.mode === "BROWSER") {
-      await this.playNoteInBrowser(note, duration);
+      await this.playNoteInBrowser(note, duration, velocity, channel);
     } else if (this.mode === "MIDI") {
       this.outputMIDI.send([0x90 | channel, note, velocity]);
       setTimeout(
@@ -185,11 +261,6 @@ export class MusicPlayer {
     }
     return notes;
   }
-}
-
-// Assisted by ChatGPT
-function midiToFrequency(midiNote) {
-  return 440 * Math.pow(2, (midiNote - 69) / 12);
 }
 
 // Assisted by ChatGPT
