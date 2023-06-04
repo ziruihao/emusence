@@ -10,14 +10,21 @@ export let clusters = [];
 export let obstacles = [];
 export const options = {
   showClusters: false,
-  showOrbs: false
+  showOrbs: true
 };
 let musicPlayer;
 let paused = false;
+let started = false;
 export const UI = {
   cadence: null,
   population: null,
   audioMode: null,
+  volume: null,
+  addPredator: null,
+  removePredator: null,
+  clusters: null,
+  orbs: null,
+  clearObstacles: null,
 };
 
 const sketch = (p) => {
@@ -53,6 +60,11 @@ const sketch = (p) => {
     })
     UI.audioMode.position(50, pos);
     pos += 50
+    UI.volume = p.createSlider(0, 100, 50);
+    UI.volume.pos = pos;
+    UI.volume.value(50);
+    UI.volume.position(50, pos);
+    pos += 50
     UI.cadence = p.createSlider(0, 15, 1);
     UI.cadence.pos = pos;
     UI.cadence.value(5);
@@ -63,7 +75,7 @@ const sketch = (p) => {
     UI.population.value(120);
     UI.population.position(50, pos);
     pos += 50
-    const addPredatorButton = p.createButton("Add Predator").mousePressed(() => {
+    UI.addPredator = p.createButton("Add Predator").mousePressed(() => {
       flock.push(
         new Predator(
           p.random(p.windowWidth),
@@ -73,47 +85,37 @@ const sketch = (p) => {
         )
       );
     });
-    addPredatorButton.position(50, pos);
+    UI.addPredator.position(50, pos);
     pos += 50
-    const removePredatorButton = p.createButton("Remove Predator").mousePressed(() => {
+    UI.removePredator = p.createButton("Remove Predator").mousePressed(() => {
       const i = flock.findIndex(boid => boid instanceof Predator)
       flock.splice(i, 1)
     });
-    removePredatorButton.position(50, pos);
+    UI.removePredator.position(50, pos);
     pos += 50
-    const clustersButton = p
+    UI.clusters = p
       .createButton("Toggle clusters")
       .mousePressed(() => {
         options.showClusters = !options.showClusters;
       });
-    clustersButton.position(50, pos);
+    UI.clusters.position(50, pos);
     pos += 50
-    const orbsButton = p
+    UI.orbs = p
       .createButton("Toggle orbs")
       .mousePressed(() => {
         options.showOrbs = !options.showOrbs;
       });
-    orbsButton.position(50, pos);
+    UI.orbs.position(50, pos);
     pos += 50
-    const clearObstaclesButton = p
+    UI.clearObstacles = p
       .createButton("Clear obstacles")
       .mousePressed(() => {
         obstacles = [];
       });
-    clearObstaclesButton.position(50, pos);
+    UI.clearObstacles.position(50, pos);
     pos += 50
 
-    for (let i = 0; i < UI.population.value(); i += 1) {
-      flock.push(
-        new Flocker(
-          p.random(p.windowWidth),
-          p.random(p.windowHeight),
-          p.random(2.7, 3.3),
-          p,
-          musicPlayer
-        )
-      );
-    }
+    Object.values(UI).forEach((el) => {el.hide()})
 
     for (let i = 0; i < 3; i += 1) {
       obstacles.push({
@@ -135,6 +137,14 @@ const sketch = (p) => {
   p.draw = () => {
     if (!paused) {
       p.background(38, 114, 147);
+
+      p.strokeWeight(0);
+      p.textSize(18);
+      if (!started) {
+        p.fill(255);
+        p.text("Click anywhere to begin.", p.windowWidth / 2 - 100, p.windowHeight / 2 - 18)
+        return
+      }
 
       let avgHeading = 0;
       for (let boid of flock) {
@@ -164,42 +174,64 @@ const sketch = (p) => {
         }
       });
 
-      p.strokeWeight(0);
-      p.fill(255, 255);
-      p.textSize(14);
-      p.textAlign(p.LEFT, p.CENTER);
-      p.text("Audio output", 50, UI.audioMode.pos - 10);
-      p.text("Cadence", 50, UI.cadence.pos - 10);
-      p.text("Population", 50, UI.population.pos - 10);
-      p.textAlign(p.LEFT, p.BOTTOM);
-      p.text(`${Math.round(p.frameRate()), 50, p.windowHeight - 50} FPS`);
+      if (p.frameCount < 720) {
+        UI.volume.value(50 * (p.frameCount / 720))
+        p.fill(255, 255 * (1 - p.frameCount / 720))
+        p.text("Nature's sounds are beautiful, but they are quiet.", p.windowWidth / 2, p.windowHeight / 3 + 40)
+        if (p.frameCount > 180) {
+          p.fill(255, 255 * (1 - ((p.frameCount - 180) / 540)))
+          p.textSize(18);
+          p.text("Drowned out by the noise of our modern world.", p.windowWidth / 2, p.windowHeight / 3 + 80)
+          if (p.frameCount > 360) {
+            p.fill(255, 255 * (1 - ((360 - p.frameCount) / 360)))
+            p.textSize(18);
+            p.text("What if we gave nature our instruments?", p.windowWidth / 2, p.windowHeight / 3 + 120)
+            if (p.frameCount > 540) {
+              p.fill(255, 255 * (1 - ((540 - p.frameCount) / 180)))
+              p.text("And invite it to conduct a symphony?", p.windowWidth / 2, p.windowHeight / 3 + 160)
+            }
+          }
+        }
+      } else {
+        if (p.frameCount == 720) {
+          Object.values(UI).forEach((el) => {el.show()})
+        }
+        p.fill(255, 255);
+        p.textSize(14);
+        p.textAlign(p.LEFT, p.CENTER);
+        p.text("Audio output", 50, UI.audioMode.pos - 10);
+        p.text("Volume", 50, UI.volume.pos - 10);
+        p.text("Cadence", 50, UI.cadence.pos - 10);
+        p.text("Population", 50, UI.population.pos - 10);
+        p.textAlign(p.LEFT, p.BOTTOM);
+        p.text(`${Math.round(p.frameRate()), 50, p.windowHeight - 50} FPS`);
+  
+        p.strokeWeight(0);
+        p.fill(255, 150);
+        p.circle(100, 100, 100);
+        p.strokeWeight(2);
+        p.stroke(155, 37, 42, 255);
+        p.line(
+          100,
+          100,
+          100 + 30 * Math.cos(p.radians(avgHeading)),
+          100 + 30 * Math.sin(p.radians(avgHeading))
+        );
+        p.stroke(5, 38, 37, 255);
+        p.strokeWeight(3);
+        p.line(
+          100,
+          100,
+          100 + 30 * Math.cos(p.radians(musicPlayer.getCurrentCirclePos())),
+          100 + 30 * Math.sin(p.radians(musicPlayer.getCurrentCirclePos()))
+        );
+        p.strokeWeight(0);
+        p.fill(0, 255);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.text(`${musicPlayer.currentKey} Major`, 100, 125);
+      }
 
-      p.strokeWeight(0);
-      p.fill(255, 150);
-      p.circle(100, 100, 100);
-      p.strokeWeight(2);
-      p.stroke(155, 37, 42, 255);
-      p.line(
-        100,
-        100,
-        100 + 30 * Math.cos(p.radians(avgHeading)),
-        100 + 30 * Math.sin(p.radians(avgHeading))
-      );
-      p.stroke(5, 38, 37, 255);
-      p.strokeWeight(3);
-      p.line(
-        100,
-        100,
-        100 + 30 * Math.cos(p.radians(musicPlayer.getCurrentCirclePos())),
-        100 + 30 * Math.sin(p.radians(musicPlayer.getCurrentCirclePos()))
-      );
-      p.strokeWeight(0);
-      p.fill(0, 255);
-      p.textSize(18);
-      p.textAlign(p.CENTER, p.CENTER);
-      p.text(musicPlayer.currentKey, 100, 125);
-
-      if (p.frameCount % 4 == 0) {
+      if (p.frameCount % 10 == 0) {
         if (flock.length > UI.population.value()) {
           flock.splice(0, 1);
         } else if (flock.length < UI.population.value()) {
@@ -213,8 +245,6 @@ const sketch = (p) => {
             )
           );
         }
-      }
-      if (p.frameCount % 10 == 0) {
         recluster();
       }
       if (p.frameCount % 60 == 0) {
@@ -224,10 +254,14 @@ const sketch = (p) => {
   };
 
   p.mouseClicked = () => {
-    Tone.start().then(() => {
-      console.log('Tone.js started')
-      console.log('%cindex.js line:213 Tone.context.sampleRate', 'color: #007acc;', Tone.context.sampleRate);
-    })
+    if (!started) {
+      started = true;
+      Tone.start().then(() => {
+        console.log('Tone.js started')
+        console.log('%cindex.js line:213 Tone.context.sampleRate', 'color: #007acc;', Tone.context.sampleRate);
+        musicPlayer.switchMode("MIDI").then(mode => UI.audioMode.selected(mode))
+      })
+    }
     let x = p.mouseX;
     let y = p.mouseY;
     let closestboid;

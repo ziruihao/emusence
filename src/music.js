@@ -66,7 +66,7 @@ export class MusicPlayer {
   }
 
   async switchMode(mode) {
-    if (mode === "MIDI") {
+    if (mode === "MIDI" ) {
       if (this.outputMIDI !== undefined) {
         this.mode = mode;
       } else if (navigator.requestMIDIAccess) {
@@ -160,38 +160,41 @@ export class MusicPlayer {
         })
         return this.mode
       }
+    } else if (mode == "NONE") {
+      this.mode = mode;
+      return this.mode
     }
-    this.mode = "NONE"
     return this.mode
   }
 
-  // Assisted by ChatGPT
   async playNoteInBrowser(midiNote, duration, velocity, channel) {
-    const now = Tone.now()
+    const scaledVelocity = (velocity / 10000) * UI.volume.value();
     switch (channel) {
       case 0:
-        this.browserInstrument.tuba.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity / 100);
+        this.browserInstrument.tuba.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), scaledVelocity * 0.5);
         break
       case 1:
-        this.browserInstrument.frenchHorn.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity / 100);
+        this.browserInstrument.frenchHorn.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), scaledVelocity);
         break
       case 2:
-        this.browserInstrument.flute.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity / 100);
+        this.browserInstrument.flute.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), scaledVelocity);
         break
       case 3:
-        this.browserInstrument.xylophone.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity / 100);
+        this.browserInstrument.xylophone.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), scaledVelocity * 0.7);
         break
       default:
-        // this.browserInstrument.tuba.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity);
+        // this.browserInstrument.piano.triggerAttackRelease(midiToNoteString(midiNote), duration / 1000, Tone.now(), velocity);
         break
     }
   }
 
   async play(note, duration, velocity = 100, channel = 0) {
+    console.log('%cmusic.js line:190 this.mode', 'color: #007acc;', this.mode);
     if (this.mode === "BROWSER") {
       await this.playNoteInBrowser(note, duration, velocity, channel);
     } else if (this.mode === "MIDI") {
-      this.outputMIDI.send([0x90 | channel, note, velocity]);
+      const scaledVelocity = velocity * 2 * (UI.volume.value() / 100);
+      this.outputMIDI.send([0x90 | channel, note, scaledVelocity]);
       setTimeout(
         () => this.outputMIDI.send([0x80 | channel, note, 0x00]),
         duration
