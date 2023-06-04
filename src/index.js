@@ -1,7 +1,7 @@
 import Flocker from "./flocker.js";
 import Predator from "./predator.js";
 import { MusicPlayer } from "./music.js";
-import jDBSCAN from "./jDBSCAN.js";
+import jDBSCAN from "./jDBScan.js";
 import p5 from "p5";
 
 export const flock = [];
