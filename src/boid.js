@@ -102,7 +102,7 @@ export default class Boid {
   draw() {
     let color = options.showClusters
       ? clusterColorMap[this.cluster]
-      : [139, 69, 30];
+      : [195, 108, 59];
     this.p.stroke(...color);
     this.p.point(this.position.x, this.position.y);
     let prevPos;

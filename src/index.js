@@ -114,11 +114,27 @@ const sketch = (p) => {
         )
       );
     }
+
+    for (let i = 0; i < 3; i += 1) {
+      obstacles.push({
+        x: Math.min(300, p.random(p.windowWidth)), y: Math.min(pos, p.random(p.windowHeight)),
+        e1: p.random(100, 110),
+        e2: p.random(100, 110),
+        lx1a: p.random(8, 16),
+        lx1b: p.random(-6, 6),
+        ly1a: p.random(8, 16),
+        ly1b: p.random(-6, 6),
+        lx2a: p.random(35, 45),
+        lx2b: p.random(-6, 6),
+        ly2a: p.random(35, 45),
+        ly2b: p.random(-6, 6),
+      });
+    }
   };
 
   p.draw = () => {
     if (!paused) {
-      p.background(14, 55, 72);
+      p.background(38, 114, 147);
 
       let avgHeading = 0;
       for (let boid of flock) {
@@ -134,11 +150,11 @@ const sketch = (p) => {
 
       [...obstacles, {...mouseObstacle, x: p.mouseX + 50, y: p.mouseY + 50}].forEach((o, idx) => {
         p.strokeWeight(0);
-        p.fill(15, 82, 75, idx == obstacles.length ? 100 : 255);
+        p.fill(18, 109, 93, idx == obstacles.length ? 100 : 255);
         p.ellipse(o.x, o.y, o.e1, o.e2);
         for (let i = 0; i < 8; i += 1) {
           p.strokeWeight(3);
-          p.stroke(5, 38, 37, idx == obstacles.length ? 100 : 255);
+          p.stroke(5, 75, 63, idx == obstacles.length ? 100 : 255);
           p.line(
             o.x + (o.lx1a + o.lx1b * 0.5) * Math.cos(p.radians(i * 45 + o.lx1b)),
             o.y + (o.ly1a + o.ly1b * 0.5) * Math.sin(p.radians(i * 45 + o.ly1b)),
@@ -210,6 +226,7 @@ const sketch = (p) => {
   p.mouseClicked = () => {
     Tone.start().then(() => {
       console.log('Tone.js started')
+      console.log('%cindex.js line:213 Tone.context.sampleRate', 'color: #007acc;', Tone.context.sampleRate);
     })
     let x = p.mouseX;
     let y = p.mouseY;
