@@ -2,6 +2,8 @@
 
 *Emergence of the muses.*
 
+<img width="1728" alt="cover" src="https://github.com/ziruihao/emusence/assets/45774151/2f50b7a6-0a77-448e-a890-73322a43e28b">
+
 Web demo: https://emusence.onrender.com
 
 GitHub: https://github.com/ziruihao/emusence
