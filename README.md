@@ -2,7 +2,7 @@
 
 *Emergence of the muses.*
 
-Web demo: https://emusence.onrender.com (Minimum of 1 MIDI port, with at least 4 channels. Please use the Ableton Live set included in this repo.)
+Web demo: https://emusence.onrender.com
 
 GitHub: https://github.com/ziruihao/emusence
 
