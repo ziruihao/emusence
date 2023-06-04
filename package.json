@@ -1,0 +1,26 @@
+{
+  "name": "emergent-music",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "python3 -m http.server 4817 --directory dist/",
+    "build": "webpack",
+    "format": "prettier --write \"src/**/*.js\""
+  },
+  "author": "Ziray Hao",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.21.8",
+    "@babel/preset-env": "^7.21.5",
+    "babel-loader": "^9.1.2",
+    "copy-webpack-plugin": "^11.0.0",
+    "webpack": "^5.83.1",
+    "webpack-cli": "^5.1.1"
+  },
+  "dependencies": {
+    "p5": "^1.6.0",
+    "prettier": "^2.8.8"
+  }
+}
