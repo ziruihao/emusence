@@ -1,5 +1,4 @@
 import * as Tone from 'tone'
-import Tuna from 'tunajs'
 import PianoMp3 from 'tonejs-instrument-piano-mp3';
 import XylophoneMp3 from 'tonejs-instrument-xylophone-mp3';
 import FluteMp3 from 'tonejs-instrument-flute-mp3';
