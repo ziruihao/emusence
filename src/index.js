@@ -259,7 +259,7 @@ const sketch = (p) => {
       Tone.start().then(() => {
         console.log('Tone.js started')
         console.log('%cindex.js line:213 Tone.context.sampleRate', 'color: #007acc;', Tone.context.sampleRate);
-        musicPlayer.switchMode("MIDI").then(mode => UI.audioMode.selected(mode))
+        musicPlayer.switchMode("BROWSER").then(mode => UI.audioMode.selected(mode))
       })
     }
     let x = p.mouseX;
