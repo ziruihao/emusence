@@ -220,7 +220,7 @@ export class MusicPlayer {
       Math.floor(headingDeltaAbs / 30) * (headingDelta / headingDeltaAbs);
     this.currentKey =
       CIRCLE_OF_FIFTHS[
-      (((SCALES[this.currentKey].circleOfFifthsIndex + keyChange) % 12) +
+      (((SCALES[this.currentKey ?? 'C'].circleOfFifthsIndex + keyChange) % 12) +
         12) %
       12
       ];

@@ -28,13 +28,20 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.ttf$/,
+        use: [
+          {
+            loader: 'file-loader'
+          },
+        ],
+      },
     ],
   },
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'public/index.html', to: 'index.html' }, // Copy the index.html file
-        { from: 'public/style.css', to: 'style.css' }, // Copy the entire css folder
+        { from: 'public/', to: './' }
       ],
     }),
   ],

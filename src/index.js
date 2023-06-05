@@ -5,6 +5,7 @@ import jDBSCAN from "./jDBScan.js";
 import p5 from "p5";
 import * as Tone from 'tone'
 
+let font;
 export const flock = [];
 export let clusters = [];
 export let obstacles = [];
@@ -43,6 +44,10 @@ const sketch = (p) => {
     ly2b: p.random(-6, 6),
   }
 
+  p.preload = () => {
+    font = p.loadFont('font.ttf');
+  }
+
   p.setup = () => {
     musicPlayer = new MusicPlayer();
     p.createCanvas(p.windowWidth, p.windowHeight);
@@ -76,7 +81,7 @@ const sketch = (p) => {
     UI.population.value(120);
     UI.population.position(50, pos);
     pos += 50
-    UI.addPredator = p.createButton("Add Predator").mousePressed(() => {
+    UI.addPredator = p.createButton("+").mousePressed(() => {
       flock.push(
         new Predator(
           p.random(p.windowWidth),
@@ -87,12 +92,13 @@ const sketch = (p) => {
       );
     });
     UI.addPredator.position(50, pos);
-    pos += 50
-    UI.removePredator = p.createButton("Remove Predator").mousePressed(() => {
+    UI.addPredator.pos = pos;
+    UI.removePredator = p.createButton("−").mousePressed(() => {
       const i = flock.findIndex(boid => boid instanceof Predator)
       flock.splice(i, 1)
     });
-    UI.removePredator.position(50, pos);
+    UI.removePredator.position(80, pos);
+    UI.removePredator.pos = pos;
     pos += 50
     UI.clusters = p
       .createButton("Toggle clusters")
@@ -120,7 +126,7 @@ const sketch = (p) => {
 
     for (let i = 0; i < 3; i += 1) {
       obstacles.push({
-        x: Math.min(300, p.random(p.windowWidth)), y: Math.min(pos, p.random(p.windowHeight)),
+        x: p.random(p.windowWidth), y: p.random(p.windowHeight),
         e1: p.random(100, 110),
         e2: p.random(100, 110),
         lx1a: p.random(8, 16),
@@ -141,6 +147,7 @@ const sketch = (p) => {
 
       p.strokeWeight(0);
       p.textSize(18);
+      p.textFont(font);
       if (!started) {
         p.fill(255);
         p.text("Click anywhere to begin.", p.windowWidth / 2 - 100, p.windowHeight / 2 - 18)
@@ -176,6 +183,7 @@ const sketch = (p) => {
       });
 
       if ((p.frameCount - startFrameCount) < 720) {
+        p.strokeWeight(0);
         UI.volume.value(50 * ((p.frameCount - startFrameCount) / 720))
         p.fill(255, 255 * (1 - (p.frameCount - startFrameCount) / 720))
         p.text("Nature's sounds are beautiful, but they are quiet.", p.windowWidth / 2, p.windowHeight / 3 + 40)
@@ -184,11 +192,11 @@ const sketch = (p) => {
           p.textSize(18);
           p.text("Drowned out by the noise of our modern world.", p.windowWidth / 2, p.windowHeight / 3 + 80)
           if ((p.frameCount - startFrameCount) > 360) {
-            p.fill(255, 255 * (1 - ((360 - (p.frameCount - startFrameCount)) / 360)))
+            p.fill(255, 255 * (1 - (((p.frameCount - startFrameCount) - 360) / 360)))
             p.textSize(18);
             p.text("What if we gave nature our instruments?", p.windowWidth / 2, p.windowHeight / 3 + 120)
             if ((p.frameCount - startFrameCount) > 540) {
-              p.fill(255, 255 * (1 - ((540 - (p.frameCount - startFrameCount)) / 180)))
+              p.fill(255, 255 * (1 - (((p.frameCount - startFrameCount) - 540) / 180)))
               p.text("And invite it to conduct a symphony?", p.windowWidth / 2, p.windowHeight / 3 + 160)
             }
           }
@@ -204,6 +212,7 @@ const sketch = (p) => {
         p.text("Volume", 50, UI.volume.pos - 10);
         p.text("Cadence", 50, UI.cadence.pos - 10);
         p.text("Population", 50, UI.population.pos - 10);
+        p.text("Predators", 50, UI.addPredator.pos - 10);
         p.textAlign(p.LEFT, p.BOTTOM);
         p.text(`${Math.round(p.frameRate()), 50, p.windowHeight - 50} FPS`);
   
